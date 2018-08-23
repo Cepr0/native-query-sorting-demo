@@ -1,35 +1,30 @@
 package io.github.cepr0.demo;
 
-import org.assertj.core.api.Assertions;
+import com.integralblue.log4jdbc.spring.Log4jdbcAutoConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.*;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.transaction.Transactional;
 
-import java.util.stream.Collectors;
-
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.*;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
+import static org.springframework.data.domain.PageRequest.of;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
+@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@DataJpaTest
+@DataJpaTest(showSql = false)
+@AutoConfigureTestDatabase(replace = NONE)
+@ImportAutoConfiguration(Log4jdbcAutoConfiguration.class)
 @Transactional
 public class ModelRepoTest {
 
@@ -48,10 +43,10 @@ public class ModelRepoTest {
 	@Test
 	public void testOrder() {
 		assertThat(modelRepo
-				.getSortedList(PageRequest.of(0, 1000, Sort.Direction.DESC, "name"))
+				.getSortedList(of(0, 1000, DESC, "name"))
 				.stream()
 				.map(Model::getName)
-				.collect(Collectors.toList())
+				.collect(toList())
 		).as("Should return a list of models in descending order")
 				.containsExactly("3", "2", "1");
 	}
