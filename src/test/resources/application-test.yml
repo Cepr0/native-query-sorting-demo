@@ -15,6 +15,15 @@ spring:
           fetch_size: 20
           batch_versioned_data: true
 
+log4jdbc:
+  trim:
+    sql:
+      extrablanklines: false
+  dump:
+    sql:
+      addsemicolon: true
+      maxlinelength: 0
+
 logging:
   level:
     jdbc:
